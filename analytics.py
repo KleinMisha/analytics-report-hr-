@@ -82,6 +82,29 @@ def get_day_names(dates: list[datetime]) -> tuple[list[str], list[str]]:
 def plot_pie_chart_activities(data: pd.DataFrame) -> None:
     """A pie chart showing the percentage of time spend on different activities"""
 
+    # calculate totals per category
+    totals = data.groupby("task")["hours"].sum()
+
+    # ensure the same ordering in the colors/categories with other figures
+    totals.sort_index(
+        key=lambda x: pd.Index(TASK_CATEGORIES).get_indexer(x),
+        inplace=True,
+    )
+
+    # Create plot
+    plt.pie(
+        totals,
+        labels=totals.index,
+        autopct="%1.1f%%",
+        shadow=True,
+        explode=[0.0, 0.0, 0.4],
+        startangle=90,
+        radius=1.8,
+        textprops={"size": 11, "color": "white", "weight": "bold"},
+    )
+    plt.legend(loc="center", bbox_to_anchor=(0.5, -0.4), fontsize=12, ncols=3)
+    plt.show()
+
 
 def plot_monthly_hours_breakdown(data: pd.DataFrame) -> None:
     """A stacked bar chart showing per month the number of hours spent and the fraction of them spent on a certain activity"""
