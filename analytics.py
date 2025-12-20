@@ -119,8 +119,6 @@ def plot_monthly_hours_breakdown(data: pd.DataFrame) -> None:
     plt.xticks(fontsize=14)
     sns.despine()
 
-    display(df_totals)
-
 
 def plot_daily_hours(data: pd.DataFrame) -> None:
     """A simple chart showing number of hours spent VS date"""
