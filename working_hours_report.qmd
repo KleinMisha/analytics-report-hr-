@@ -11,19 +11,21 @@ echo: False
 
 # Data science minor at Hogeschool Rotterdam 2025/2026 
 
+
+```{python}
+# | tags: [parameters]
+
+data_path = "path/to/excell/file"
+hourly_rate = 0  # euro
+```
+
 ```{python}
 from pathlib import Path
 from analytics import prepare_data
 
-DATA_PATH = Path(
-    "/Users/misha/Documents/work/HSR_Rotterdam_minor_data_science/hours_worked.xlsx"
-)
-
-hours_data = prepare_data(DATA_PATH)
-
-
-HOURLY_RATE = 70  # euro
+hours_data = prepare_data(Path(data_path))
 ```
+
 
 
 # Summary goes here 
