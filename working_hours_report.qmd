@@ -49,3 +49,10 @@ from analytics import plot_monthly_hours_breakdown
 
 plot_monthly_hours_breakdown(hours_data)
 ``` 
+
+## Hours spend over time 
+```{python}
+from analytics import plot_daily_hours
+
+plot_daily_hours(hours_data)
+```

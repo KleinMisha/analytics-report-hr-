@@ -144,6 +144,18 @@ def plot_monthly_hours_breakdown(data: pd.DataFrame) -> None:
 
 def plot_daily_hours(data: pd.DataFrame) -> None:
     """A simple chart showing number of hours spent VS date"""
+    # sum all tasks
+    hours_per_day = data.groupby("date")["hours"].sum()
+    date = pd.to_datetime(hours_per_day.index)
+
+    # create the plot
+    plt.stem(date, hours_per_day, basefmt="none")
+    plt.xticks(fontsize=14, rotation=40)
+    plt.yticks(fontsize=14)
+    plt.ylabel("# hours", fontsize=14)
+    plt.ylim(0, None)
+    sns.despine()
+    plt.show()
 
 
 def display_monthly_income(data: pd.DataFrame) -> None:
