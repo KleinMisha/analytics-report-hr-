@@ -11,8 +11,7 @@ import calendar
 
 
 TASK_CATEGORIES = ("coaching", "lecture", "exam review")
-COLORS = ["#46dabf", "#9f7ae7", "#da3e94"]
-COLORS = ["#46dabf", "#00a9ff", "#9f7ae7"]
+COLORS = ["#46dabf", "#009ac9", "#58508d"]
 sns.set_palette(COLORS)
 
 
@@ -94,7 +93,7 @@ def plot_pie_chart_activities(data: pd.DataFrame) -> None:
     # Create plot
     plt.pie(
         totals,
-        labels=totals.index,
+        labels=list(totals.index),
         autopct="%1.1f%%",
         shadow=True,
         explode=[0.0, 0.0, 0.4],
