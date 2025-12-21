@@ -109,7 +109,7 @@ def plot_monthly_hours_breakdown(data: pd.DataFrame) -> None:
     """A stacked bar chart showing per month the number of hours spent and the fraction of them spent on a certain activity"""
 
     # Calculate total hours for every task and month
-    by_month_and_task = data.groupby(["month_name", "task"])["hours"]
+    by_month_and_task = data.groupby(["month_abbrev", "task"])["hours"]
     totals = by_month_and_task.sum()
 
     # create a pivot-table
@@ -119,7 +119,7 @@ def plot_monthly_hours_breakdown(data: pd.DataFrame) -> None:
     df_totals.fillna(0.0, inplace=True)
 
     # place months in chronological order
-    months_in_order = list(calendar.month_name)[1:]
+    months_in_order = list(calendar.month_abbr)[1:]
     df_totals = df_totals.sort_index(
         key=lambda x: pd.Index(months_in_order).get_indexer(x)
     )
@@ -158,11 +158,17 @@ def plot_daily_hours(data: pd.DataFrame) -> None:
     plt.show()
 
 
-def display_monthly_income(data: pd.DataFrame) -> None:
-    """Show name of the moth and the amount claimed at Hogeschool Rotterdam"""
+def display_monthly_income(data: pd.DataFrame, hourly_rate: int) -> None:
+    """Show name of the month and the amount claimed at Hogeschool Rotterdam"""
+
+    # total hours worked in a month
+    hours_per_month = data.groupby(["month_name"])["hours"].sum()
+    for month, hours in zip(hours_per_month.index, hours_per_month.values):
+        income = calculate_income(hourly_rate, hours)
+        print(f"{month} \t €{income} ")
 
 
-def calculate_income(hourly_rate: float, hours_worked: int) -> float:
+def calculate_income(hourly_rate: int, hours_worked: float) -> float:
     return hourly_rate * hours_worked
 
 
