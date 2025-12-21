@@ -10,5 +10,9 @@
         "reportUnknownMemberType": "none",
         "reportUnknownVariableType": "none",
         "reportUnknownArgumentType": "none"
-    }
+    },
+    "cSpell.words": [
+        "Hogeschool",
+        "Rotterdam"
+    ]
 }
