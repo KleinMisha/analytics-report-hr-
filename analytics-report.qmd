@@ -1,0 +1,49 @@
+---
+title: "Analytics Hogeschool Rotterdam "
+format:
+    pdf:  default 
+
+echo: False 
+---
+
+
+
+
+# Data science minor at Hogeschool Rotterdam 2025/2026 
+
+```{python}
+from pathlib import Path
+from analytics import prepare_data
+
+DATA_PATH = Path(
+    "/Users/misha/Documents/work/HSR_Rotterdam_minor_data_science/hours_worked.xlsx"
+)
+
+hours_data = prepare_data(DATA_PATH)
+
+
+HOURLY_RATE = 70  # euro
+```
+
+
+# Summary goes here 
+CMI, Data science projects, ... 
+
+
+## Breakdown of hours spent per task
+
+
+```{python}
+from analytics import plot_pie_chart_activities
+
+plot_pie_chart_activities(hours_data)
+```
+
+## Breakdown by month and task 
+
+
+```{python}
+from analytics import plot_monthly_hours_breakdown
+
+plot_monthly_hours_breakdown(hours_data)
+``` 
