@@ -8,10 +8,11 @@ import seaborn as sns
 from datetime import datetime
 from pathlib import Path
 import calendar
+import numpy as np
 
 
 TASK_CATEGORIES = ("coaching", "lecture", "exam review")
-COLORS = ["#46dabf", "#009ac9", "#58508d"]
+COLORS = ["#46dabf", "#009ac9", "#ff6384"]
 sns.set_palette(COLORS)
 
 
@@ -81,27 +82,70 @@ def get_day_names(dates: list[datetime]) -> tuple[list[str], list[str]]:
 def plot_pie_chart_activities(data: pd.DataFrame) -> None:
     """A pie chart showing the percentage of time spend on different activities"""
 
-    # calculate totals per category
-    totals = data.groupby("task")["hours"].sum()
+    # parameters for formatting the plot
+    threshold = 10.0
+    text_pos = 2.0  # as a fraction of the complete figure
+    line_start_pos = 1.0  # as a fraction of the complete figure
 
-    # ensure the same ordering in the colors/categories with other figures
-    totals.sort_index(
+    # calculate totals per category
+    hours_per_task = data.groupby("task")["hours"].sum()
+    hours_per_task.sort_index(
         key=lambda x: pd.Index(TASK_CATEGORIES).get_indexer(x),
         inplace=True,
     )
+    tot_hours = sum(list(hours_per_task))
+    percentages = [hrs / tot_hours * 100 for hrs in hours_per_task]
+
+    # ensure the same ordering in the colors/categories with other figures
+
+    # Helper functions only ever used within the context of this function
+    def _is_large_slice(percentage: float, threshold: float) -> bool:
+        return percentage > threshold
+
+    def _custom_pct_formatting_rule(percentage: float, threshold: float) -> str:
+        """Only display the percentage the wedge represents if it exceeds a threshold value."""
+        if _is_large_slice(percentage, threshold):
+            return f"{percentage:.1f}%"
+        return ""
 
     # Create plot
-    plt.pie(
-        totals,
-        labels=list(totals.index),
-        autopct="%1.1f%%",
+    wedges, *_ = plt.pie(
+        hours_per_task,
+        labels=list(hours_per_task.index),
+        autopct=lambda pct: _custom_pct_formatting_rule(pct, threshold),
         shadow=True,
-        explode=[0.0, 0.0, 0.4],
-        startangle=90,
-        radius=1.8,
-        textprops={"size": 11, "color": "white", "weight": "bold"},
+        startangle=90.0,
+        radius=1.5,
+        textprops={"size": 16, "color": "white", "weight": "bold"},
     )
-    plt.legend(loc="center", bbox_to_anchor=(0.5, -0.4), fontsize=12, ncols=3)
+    ax = plt.gca()
+    for wedge, pct in zip(wedges, percentages):
+        if not _is_large_slice(pct, threshold):
+            # Get the angle at the middle of the wedge
+            angle = (wedge.theta2 + wedge.theta1) / 2
+            angle_rad = np.radians(angle)
+            # center coordinate of the wedge (x,y), using polar coordinates
+            x = np.cos(angle_rad)
+            y = np.sin(angle_rad)
+
+            # Add text annotation with a line
+            ax.annotate(
+                f"{pct:.1f}%",
+                xy=(x * line_start_pos, y * line_start_pos),
+                xytext=(x * text_pos, y * text_pos),
+                fontsize=16,
+                fontweight="bold",
+                color="black",
+                ha="left" if x > 0 else "right",
+                va="center",
+                arrowprops=dict(
+                    arrowstyle="-", color="black", lw=1, connectionstyle="arc3,rad=0"
+                ),
+            )
+
+    plt.legend(
+        loc="center", bbox_to_anchor=(1.5, 1.0), fontsize=20, ncols=1, frameon=False
+    )
     plt.show()
 
 
@@ -134,7 +178,7 @@ def plot_monthly_hours_breakdown(data: pd.DataFrame) -> None:
         )
         previous_category = category
 
-    plt.legend()
+    plt.legend(fontsize=14)
     plt.xlabel("Month", fontsize=14)
     plt.ylabel("# hours", fontsize=14)
     plt.yticks([i * 5 for i in range(9)], fontsize=14)
