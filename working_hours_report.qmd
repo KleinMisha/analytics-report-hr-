@@ -69,9 +69,12 @@ plot_daily_hours(hours_data)
 ```
 
 ```{python}
+# | output: asis
 from analytics import display_monthly_income
 
-display_monthly_income(hours_data, hourly_rate)
+formatting = {"color": "red", "size": 22, "bold": True, "italic": True}
+html = display_monthly_income(hours_data, hourly_rate, formatting)
+print(html)
 ```
 
 
