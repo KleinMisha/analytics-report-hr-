@@ -1,7 +1,7 @@
 {
     // Color of title bar: 
     "workbench.colorCustomizations": {
-        "titleBar.activeBackground": "#58508d"
+        "titleBar.activeBackground": "#009ac9"
     },
     // Type Checking settings: Pandas & Matplotlib tend to confuse PyLance too much. 
     // Tell it to ignore some of these "return type of function X is partially unknown, I have one of many Overwrites ..." 
