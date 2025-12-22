@@ -1,5 +1,5 @@
-#show: article.with(
-    $if(title)$
-        title: "$title$"
-    $endif$
+#show: body => report(
+    title: [$title$],
+    date: [$date$],
+    body
 )

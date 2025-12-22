@@ -11,7 +11,7 @@ echo: False
 
 
 
-# Data science minor at Hogeschool Rotterdam 2025/2026 
+
 
 
 ```{python}
@@ -31,49 +31,36 @@ hours_data = prepare_data(Path(data_path))
 
 
 ```{=typst}
-#text-box[
+#horizontal_line()
 ```
 
-**summary**  
-CMI, Data science projects, ... 
+**lecturer/student project team coach**  
+As part of the *minor in Data science* , offered by the 'instituut voor Communicatie, Media en Informatietechnologie (CMI)', I assisted in their minor-long *data science project*. After been given a choice of several initial data sets, the students decided on their own research questions, cleaned and enriched their data (from outside sources), conducted literature research into their chosen topic, and trained/tested their Machine-Learning/data science based solution. My role is to act as a *team coach* for three of the teams: Guiding them throughout this journey into what for many is their first bit of research experience. 
+ 
 ```{=typst}
-]
+#horizontal_line()
 ```
-
 
 ## Breakdown
+Details of hours spent. 
 
-
-:::: {layout="[0.5, 0.5]"}
-
-::: {#firstcol}
-
-
+#### What activities did I perform? 
+<div style="background-color: #F8F8F8;">
+:::{layout-ncol="2"}
 ```{python}
 from analytics import plot_pie_chart_activities
 
 plot_pie_chart_activities(hours_data)
 ```
-
-
-:::
-
-::: {#secondcol}
-
 ```{python}
 from analytics import plot_monthly_hours_breakdown
 
 plot_monthly_hours_breakdown(hours_data)
 ```
-
-
 :::
-::::
+</div>
 
-:::: {layout="[0.5, 0.5]"}
-
-
-::: {#firstcol}
+#### When did I perform them? 
 
 ```{python}
 from analytics import plot_daily_hours
@@ -81,16 +68,11 @@ from analytics import plot_daily_hours
 plot_daily_hours(hours_data)
 ```
 
-:::
-
-
-::: {#secondcol}
 ```{python}
 from analytics import display_monthly_income
 
 display_monthly_income(hours_data, hourly_rate)
 ```
-:::
-::::
+
 
 
