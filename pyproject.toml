@@ -12,4 +12,5 @@ dependencies = [
     "papermill>=2.6.0",
     "quarto>=0.1.0",
     "seaborn>=0.13.2",
+    "webcolors>=25.10.0",
 ]
