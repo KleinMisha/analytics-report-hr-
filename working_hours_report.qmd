@@ -78,4 +78,8 @@ print(html)
 ```
 
 
+```{python}
+from analytics import plot_pie_chart_days
 
+plot_pie_chart_days(hours_data)
+```

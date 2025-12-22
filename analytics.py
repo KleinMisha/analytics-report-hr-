@@ -11,10 +11,10 @@ from pathlib import Path
 from typing import Any
 import calendar
 import webcolors  # type: ignore
-
+from matplotlib.axes import Axes
 
 TASK_CATEGORIES = ("coaching", "lecture", "exam review")
-COLORS = ["#46dabf", "#009ac9", "#ff6384"]
+COLORS = ["#46dabf", "#009ac9", "#ff6384", "#58508d", "#ffa600"]
 sns.set_palette(COLORS)
 
 
@@ -44,70 +44,46 @@ def prepare_data(path: Path) -> pd.DataFrame:
 def plot_pie_chart_activities(data: pd.DataFrame) -> None:
     """A pie chart showing the percentage of time spend on different activities"""
 
-    # parameters for formatting the plot
-    threshold = 10.0
-    text_pos = 2.0  # as a fraction of the complete figure
-    line_start_pos = 1.0  # as a fraction of the complete figure
-
     # calculate totals per category
     hours_per_task = data.groupby("task")["hours"].sum()
     hours_per_task.sort_index(
         key=lambda x: pd.Index(TASK_CATEGORIES).get_indexer(x),
         inplace=True,
     )
+
+    # data for in the pie chart
     tot_hours = sum(list(hours_per_task))
-    percentages = [hrs / tot_hours * 100 for hrs in hours_per_task]
+    percentages = [hrs / tot_hours * 100.0 for hrs in hours_per_task]
+    tasks = list(hours_per_task.index)
 
-    # ensure the same ordering in the colors/categories with other figures
-
-    # Helper functions only ever used within the context of this function
-    def _is_large_slice(percentage: float, threshold: float) -> bool:
-        return percentage > threshold
-
-    def _custom_pct_formatting_rule(percentage: float, threshold: float) -> str:
-        """Only display the percentage the wedge represents if it exceeds a threshold value."""
-        if _is_large_slice(percentage, threshold):
-            return f"{percentage:.1f}%"
-        return ""
-
-    # Create plot
-    wedges, *_ = plt.pie(
-        hours_per_task,
-        labels=list(hours_per_task.index),
-        autopct=lambda pct: _custom_pct_formatting_rule(pct, threshold),
-        shadow=True,
-        startangle=90.0,
-        radius=1.5,
-        textprops={"size": 16, "color": "white", "weight": "bold"},
+    # build pie chart
+    _, ax = plt.subplots()
+    pie_chart_with_formatting(
+        ax, percentages, tasks, threshold=10.0, text_pos=2.0, line_start_pos=1.0
     )
-    ax = plt.gca()
-    for wedge, pct in zip(wedges, percentages):
-        if not _is_large_slice(pct, threshold):
-            # Get the angle at the middle of the wedge
-            angle = (wedge.theta2 + wedge.theta1) / 2
-            angle_rad = np.radians(angle)
-            # center coordinate of the wedge (x,y), using polar coordinates
-            x = np.cos(angle_rad)
-            y = np.sin(angle_rad)
 
-            # Add text annotation with a line
-            ax.annotate(
-                f"{pct:.1f}%",
-                xy=(x * line_start_pos, y * line_start_pos),
-                xytext=(x * text_pos, y * text_pos),
-                fontsize=16,
-                fontweight="bold",
-                color="black",
-                ha="left" if x > 0 else "right",
-                va="center",
-                arrowprops=dict(
-                    arrowstyle="-", color="black", lw=1, connectionstyle="arc3,rad=0"
-                ),
-            )
+    plt.show()
 
-    plt.legend(
-        loc="center", bbox_to_anchor=(1.5, 1.0), fontsize=20, ncols=1, frameon=False
+
+def plot_pie_chart_days(data: pd.DataFrame) -> None:
+    """A pie chart showing the percentage of time spend per weekday"""
+    # calculate totals per weekday
+    hours_per_day = data.groupby("day_abbrev")["hours"].sum()
+    hours_per_day.sort_index(
+        key=lambda x: pd.Index(list(calendar.day_abbr)).get_indexer(x), inplace=True
     )
+
+    # data for in the pie chart
+    tot_hours = sum(list(hours_per_day))
+    percentages = [hrs / tot_hours * 100.0 for hrs in hours_per_day]
+    weekdays = list(hours_per_day.index)
+
+    # build pie chart
+    _, ax = plt.subplots()
+    pie_chart_with_formatting(
+        ax, percentages, weekdays, threshold=10.0, text_pos=2.0, line_start_pos=1.0
+    )
+
     plt.show()
 
 
@@ -262,3 +238,72 @@ def is_valid_html_color(color: str) -> bool:
     is_known_name = color in webcolors.names()
     is_hex = color.startswith("#") and len(color[1:]) == 6
     return is_known_name or is_hex
+
+
+def pie_chart_with_formatting(
+    ax: Axes,
+    percentages: list[float],
+    labels: list[str],
+    threshold: float = 10.0,
+    text_pos: float = 2.0,
+    line_start_pos: float = 1.0,
+) -> None:
+    """
+    A custom formatted pie chart
+    ---
+    * Display `percentages` of every slice in their wedge, if the wedge is large enough
+    * For smaller wedges (percentage of total below given `threshold`), draw a indicator line and place text outside of wedge
+    * Applies some additional styling for placing the labels with `text_pos` and `line_start_pos` both given as a fraction of the total figure
+    """
+
+    # ensure the same ordering in the colors/categories with other figures
+
+    # Create plot
+    wedges, *_ = ax.pie(
+        percentages,
+        labels=labels,
+        autopct=lambda pct: custom_pct_formatting_rule(pct, threshold),
+        shadow=True,
+        startangle=90.0,
+        radius=1.5,
+        textprops={"size": 16, "color": "white", "weight": "bold"},
+    )
+    for wedge, pct in zip(wedges, percentages):
+        if not is_large_slice(pct, threshold):
+            # Get the angle at the middle of the wedge
+            angle = (wedge.theta2 + wedge.theta1) / 2
+            angle_rad = np.radians(angle)
+            # center coordinate of the wedge (x,y), using polar coordinates
+            x = np.cos(angle_rad)
+            y = np.sin(angle_rad)
+
+            # Add text annotation with a line
+            ax.annotate(
+                f"{pct:.1f}%",
+                xy=(x * line_start_pos, y * line_start_pos),
+                xytext=(x * text_pos, y * text_pos),
+                fontsize=16,
+                fontweight="bold",
+                color="black",
+                ha="left" if x > 0 else "right",
+                va="center",
+                arrowprops=dict(
+                    arrowstyle="-", color="black", lw=1, connectionstyle="arc3,rad=0"
+                ),
+            )
+
+    plt.legend(
+        loc="center", bbox_to_anchor=(1.5, 1.0), fontsize=20, ncols=1, frameon=False
+    )
+
+
+# Helper functions only ever used within the context of this function
+def is_large_slice(percentage: float, threshold: float) -> bool:
+    return percentage > threshold
+
+
+def custom_pct_formatting_rule(percentage: float, threshold: float) -> str:
+    """Only display the percentage the wedge represents if it exceeds a threshold value."""
+    if is_large_slice(percentage, threshold):
+        return f"{percentage:.1f}%"
+    return ""
