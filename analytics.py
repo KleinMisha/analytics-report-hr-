@@ -3,12 +3,14 @@ Helper functions to create the figures to be displayed in the PDF
 """
 
 import pandas as pd
+import numpy as np
 import matplotlib.pylab as plt
 import seaborn as sns
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 import calendar
-import numpy as np
+import webcolors  # type: ignore
 
 
 TASK_CATEGORIES = ("coaching", "lecture", "exam review")
@@ -16,6 +18,7 @@ COLORS = ["#46dabf", "#009ac9", "#ff6384"]
 sns.set_palette(COLORS)
 
 
+# Methods called from Quarto document
 def prepare_data(path: Path) -> pd.DataFrame:
     """load the data, do some needed cleaning steps"""
     # load the data:
@@ -36,47 +39,6 @@ def prepare_data(path: Path) -> pd.DataFrame:
     # simplify task categories
     df["task"] = clean_task_names(list(df["task"]))
     return df
-
-
-def clean_task_names(tasks: list[str]) -> list[str]:
-    """Simplify the task string to create a category out of it"""
-    return [categorize_task(task) for task in tasks]
-
-
-def categorize_task(task: str) -> str:
-    """Simplify the task string to create a category out of it"""
-    for category in TASK_CATEGORIES:
-        if has_matching_word(task, category):
-            return category
-    return "other"
-
-
-def is_known_category(task: str) -> bool:
-    """Checks if any of the words in the task description match any of the words in the possible categories"""
-    return any(
-        has_matching_word(task, known_category) for known_category in TASK_CATEGORIES
-    )
-
-
-def has_matching_word(string_1: str, string_2: str) -> bool:
-    """Checks if the two strings have (at least) a word in common"""
-    words = string_1.split(" ")
-    words_to_match = string_2.split(" ")
-    return any(word in words_to_match for word in words)
-
-
-def get_month_names(dates: list[datetime]) -> tuple[list[str], list[str]]:
-    """determine the name of the month (and it's abbreviation)"""
-    month_names = [calendar.month_name[date.month] for date in dates]
-    month_abbrevs = [calendar.month_abbr[date.month] for date in dates]
-    return month_names, month_abbrevs
-
-
-def get_day_names(dates: list[datetime]) -> tuple[list[str], list[str]]:
-    """determine the name of the day (and it's abbreviation)"""
-    day_names = [calendar.day_name[date.weekday()] for date in dates]
-    day_abbrevs = [calendar.day_abbr[date.weekday()] for date in dates]
-    return day_names, day_abbrevs
 
 
 def plot_pie_chart_activities(data: pd.DataFrame) -> None:
@@ -202,20 +164,101 @@ def plot_daily_hours(data: pd.DataFrame) -> None:
     plt.show()
 
 
-def display_monthly_income(data: pd.DataFrame, hourly_rate: int) -> None:
-    """Show name of the month and the amount claimed at Hogeschool Rotterdam"""
+def display_monthly_income(
+    data: pd.DataFrame, hourly_rate: int, text_format: dict[str, Any]
+) -> None:
+    """Show name of the month and the amount claimed at Hogeschool Rotterdam
+    #! for this simple script: Just assume I do not forget to enter the dictionary properly. Would've used some dataclass or typed dictionary if this would be 'production' code.
+    """
 
     # total hours worked in a month
     hours_per_month = data.groupby(["month_name"])["hours"].sum()
     for month, hours in zip(hours_per_month.index, hours_per_month.values):
         income = calculate_income(hourly_rate, hours)
-        print(f"{month} \t €{income} ")
+        html = create_html_text(f"{month} \t €{income} \n", **text_format)
+        break
+    return html
+
+
+# Helper functions
+def clean_task_names(tasks: list[str]) -> list[str]:
+    """Simplify the task string to create a category out of it"""
+    return [categorize_task(task) for task in tasks]
+
+
+def categorize_task(task: str) -> str:
+    """Simplify the task string to create a category out of it"""
+    for category in TASK_CATEGORIES:
+        if has_matching_word(task, category):
+            return category
+    return "other"
+
+
+def is_known_category(task: str) -> bool:
+    """Checks if any of the words in the task description match any of the words in the possible categories"""
+    return any(
+        has_matching_word(task, known_category) for known_category in TASK_CATEGORIES
+    )
+
+
+def has_matching_word(string_1: str, string_2: str) -> bool:
+    """Checks if the two strings have (at least) a word in common"""
+    words = string_1.split(" ")
+    words_to_match = string_2.split(" ")
+    return any(word in words_to_match for word in words)
+
+
+def get_month_names(dates: list[datetime]) -> tuple[list[str], list[str]]:
+    """determine the name of the month (and it's abbreviation)"""
+    month_names = [calendar.month_name[date.month] for date in dates]
+    month_abbrevs = [calendar.month_abbr[date.month] for date in dates]
+    return month_names, month_abbrevs
+
+
+def get_day_names(dates: list[datetime]) -> tuple[list[str], list[str]]:
+    """determine the name of the day (and it's abbreviation)"""
+    day_names = [calendar.day_name[date.weekday()] for date in dates]
+    day_abbrevs = [calendar.day_abbr[date.weekday()] for date in dates]
+    return day_names, day_abbrevs
 
 
 def calculate_income(hourly_rate: int, hours_worked: float) -> float:
     return hourly_rate * hours_worked
 
 
-def determine_project_duration(data: pd.DataFrame) -> tuple[datetime, datetime]:
-    """Find earliest and latest entry dates"""
-    ...
+def create_html_text(
+    text: str,
+    color: str = "#000000",
+    size: int = 10,
+    bold: bool = False,
+    italic: bool = False,
+) -> str:
+    """Generate HTML for formatted text with some basic (not extensive) options"""
+
+    # validate color:
+    if not is_valid_html_color(color):
+        raise ValueError(
+            f"Unkown color: {color}. \n Enter either a HEX code [ex. #009ac9, #000000, etc.] \n or a known name from {webcolors.names()}"
+        )
+
+    # set options:
+    weight = "bold" if bold else "normal"
+    style = "italic" if italic else "normal"
+
+    # build the HTML string
+    adjust_color = f"color: {color}"
+    adjust_size = f"font-size: {size}px"
+    adjust_weight = f"font-weight: {weight}"
+    adjust_style = f"font-style: {style};"
+    formatting = (
+        ";".join([adjust_color, adjust_size, adjust_weight, adjust_style])
+        + "white-space: pre;"  # Apparently the thing that tells it to interpret the \t and \n as I'd like it.
+    )
+    return f'<span style="{formatting}">{text}</span>'
+
+
+def is_valid_html_color(color: str) -> bool:
+    """Check if entered color is a correct HEX code or a known name for a HTML/CSS color."""
+    is_known_name = color in webcolors.names()
+    is_hex = color.startswith("#") and len(color[1:]) == 6
+    return is_known_name or is_hex
