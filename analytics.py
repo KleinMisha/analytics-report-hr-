@@ -152,8 +152,6 @@ def bar_chart_monthly_incomes(data: pd.DataFrame, hourly_rate: int) -> None:
     hours = list(hours_per_month.values)
     for n, hrs in enumerate(hours):
         income = calculate_income(hourly_rate, hrs)
-
-        color = "#009ac9"
         # the last month: fill the bar. Others leave showing only the outline.
         if n == len(hours) - 1:
             facecolor = COLORS[1]
