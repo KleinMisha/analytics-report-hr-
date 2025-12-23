@@ -19,7 +19,7 @@ COLORS = ["#46dabf", "#009ac9", "#ff6384", "#58508d", "#ffa600"]
 sns.set_palette(COLORS)
 
 
-# Methods called from Quarto document
+# Functions called from Quarto document
 def prepare_data(path: Path) -> pd.DataFrame:
     """load the data, do some needed cleaning steps"""
     # load the data:
@@ -190,6 +190,18 @@ def create_html_monthly_incomes(
     return f"<div> {html_table}</div>"
 
 
+def determine_project_period(data: pd.DataFrame) -> tuple[str, str]:
+    """Finds and formats start-/end- dates of the project based on entered dates in dataset."""
+    first_day: datetime = data["date"].min()
+    last_day: datetime = data["date"].max()
+    return first_day.strftime("%Y-%m-%d"), last_day.strftime("%Y-%m-%d")
+
+
+def calculate_total_hours(data: pd.DataFrame) -> float:
+    """Simply add together all hours spend"""
+    return float(data["hours"].sum())
+
+
 # Helper functions
 def clean_task_names(tasks: list[str]) -> list[str]:
     """Simplify the task string to create a category out of it"""
@@ -331,7 +343,6 @@ def pie_chart_with_formatting(
     )
 
 
-# Helper functions only ever used within the context of this function
 def is_large_slice(percentage: float, threshold: float) -> bool:
     return percentage > threshold
 

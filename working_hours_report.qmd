@@ -6,6 +6,7 @@ format:
             - typst-show.typ
             - typst-template.typ
 echo: False 
+jupyter: python3 
 ---
 
 
@@ -23,9 +24,15 @@ hourly_rate = 0  # euro
 
 ```{python}
 from pathlib import Path
-from analytics import prepare_data
+from datetime import datetime
+from analytics import prepare_data, determine_project_period, calculate_total_hours
 
+# Load and clean data for usage later:
 hours_data = prepare_data(Path(data_path))
+
+# compute values used in the summary section
+start_date, end_date = determine_project_period(hours_data)
+total_hours = calculate_total_hours(hours_data)
 ```
 
 
@@ -33,22 +40,24 @@ hours_data = prepare_data(Path(data_path))
 ```{=typst}
 #horizontal_line()
 ```
-**Summary**
-Short description 
-**Duration:** from yyyy-mm-dd to yyyy-mm-dd
-**Total hours**: xx hours  
+**Summary**  
+Assisted the "instituut voor **C**ommunicatie **M**edia en **I**nformatietechnologie" (CMI) of the *Hogeschool Rotterdam*.
+Part of their *data science minor*, in particular their *data science project module*.  
+
+**Duration:** from `{python} start_date` to `{python} end_date` 
+
+**Total hours**: `{python} total_hours` hours 
 ```{=typst}
 #horizontal_line()
 ```
 
-## Breakdown
+## Breakdown 
 Details of hours spent. 
 
 #### What activities did I perform? 
 ```{=typst}
 #grey_box[
 ```
-
 :::{layout-ncol="2"}
 ```{python}
 from analytics import plot_pie_chart_activities
@@ -63,7 +72,6 @@ plot_monthly_hours_breakdown(hours_data)
 :::
 ```{=typst}
 ]
-#horizontal_line()
 ```
 #### When did I perform them? 
 
@@ -86,8 +94,8 @@ plot_pie_chart_days(hours_data)
 :::
 ```{=typst}
 ]
-#horizontal_line()
 ```
+
 #### How much to declare? 
 ```{=typst}
 #dashed_box[
