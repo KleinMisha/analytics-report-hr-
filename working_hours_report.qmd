@@ -33,10 +33,10 @@ hours_data = prepare_data(Path(data_path))
 ```{=typst}
 #horizontal_line()
 ```
-
-**lecturer/student project team coach**  
-As part of the *minor in Data science* , offered by the 'instituut voor Communicatie, Media en Informatietechnologie (CMI)', I assisted in their minor-long *data science project*. After been given a choice of several initial data sets, the students decided on their own research questions, cleaned and enriched their data (from outside sources), conducted literature research into their chosen topic, and trained/tested their Machine-Learning/data science based solution. My role is to act as a *team coach* for three of the teams: Guiding them throughout this journey into what for many is their first bit of research experience. 
- 
+**Summary**
+Short description 
+**Duration:** from yyyy-mm-dd to yyyy-mm-dd
+**Total hours**: xx hours  
 ```{=typst}
 #horizontal_line()
 ```
@@ -45,7 +45,10 @@ As part of the *minor in Data science* , offered by the 'instituut voor Communic
 Details of hours spent. 
 
 #### What activities did I perform? 
-<div style="background-color: #F8F8F8;">
+```{=typst}
+#grey_box[
+```
+
 :::{layout-ncol="2"}
 ```{python}
 from analytics import plot_pie_chart_activities
@@ -58,10 +61,13 @@ from analytics import plot_monthly_hours_breakdown
 plot_monthly_hours_breakdown(hours_data)
 ```
 :::
-</div>
-
+```{=typst}
+]
+```
 #### When did I perform them? 
-<div style="background-color: #F8F8F8;">
+```{=typst}
+#grey_box[
+```
 :::{layout-ncol="2"}
 
 ```{python}
@@ -76,10 +82,14 @@ from analytics import plot_pie_chart_days
 plot_pie_chart_days(hours_data)
 ```
 :::
-</div>
-
+```{=typst}
+]
+```
 #### How much to declare? 
-<div style="background-color: #F8F8F8;">
+```{=typst}
+#grey_box[
+```
+
 :::{layout-ncol="2"}
 
 ```{python}
@@ -96,9 +106,7 @@ formatting = {"size": 22, "bold": True, "italic": True}
 html = create_html_monthly_incomes(hours_data, hourly_rate, formatting)
 print(html)
 ```
-
-
-
 :::
-</div>
-
+```{=typst}
+]
+```

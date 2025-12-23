@@ -1,4 +1,15 @@
 
+// content box
+#let grey_box(content) = {
+
+  rect(
+    width: 100%,
+    height: 20%,
+    fill: rgb("#f8f8f8")
+  )[
+    #content
+  ]
+}
 
 // horizontal lines between sections 
 #let horizontal_line()={ 
