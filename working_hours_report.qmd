@@ -63,8 +63,10 @@ plot_monthly_hours_breakdown(hours_data)
 :::
 ```{=typst}
 ]
+#horizontal_line()
 ```
 #### When did I perform them? 
+
 ```{=typst}
 #grey_box[
 ```
@@ -84,10 +86,11 @@ plot_pie_chart_days(hours_data)
 :::
 ```{=typst}
 ]
+#horizontal_line()
 ```
 #### How much to declare? 
 ```{=typst}
-#grey_box[
+#dashed_box[
 ```
 
 :::{layout-ncol="2"}

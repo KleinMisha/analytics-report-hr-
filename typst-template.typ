@@ -1,5 +1,5 @@
 
-// content box
+// content boxes
 #let grey_box(content) = {
 
   rect(
@@ -11,6 +11,15 @@
   ]
 }
 
+#let dashed_box(content) = {
+  rect(
+    width: 100%,
+    height: 20%,
+    stroke: (paint: rgb("#009ac9"), thickness: 1pt, dash: "dashed")
+  )[
+    #content
+  ]
+}
 // horizontal lines between sections 
 #let horizontal_line()={ 
   line(
