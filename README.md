@@ -12,7 +12,7 @@ Making this report might not have been strictly necessary, but it taught me some
 
 ---
 
-<div style="color: skyblue">‼️ Given this is an extremely simple project, I did not include any tests and placed almost everything in the project's root directory. I simply do not expect this project to every grow. If it does, then I'd reorganize some files and such. </div>
+<span style="color: skyblue">‼️ Given this is an extremely simple project, I did not include any tests and placed almost everything in the project's root directory. I simply do not expect this project to every grow. If it does, then I'd reorganize some files and such. </span>
 
 
 # 🛠️ Tools 
