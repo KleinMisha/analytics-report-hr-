@@ -13,7 +13,7 @@ wheels/
 .env
 
 # Exclude the PDFs themselves (except maybe some example version without the actual values in it for the README which I can force push later)
-./reports/ 
+reports/ 
 
 
 /.quarto/
