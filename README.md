@@ -44,7 +44,7 @@ Making this report might not have been strictly necessary, but it taught me some
 6. Output is written into `reports/` (under `.gitignore`).
 
 ---
-<div style="color: hotpink">
+<span style="color: hotpink">
 ⚠️ Quarto will ask you to first install some `LaTex` engine and `papermill`. Simply follow the instructions shown on screen.
 
 ```{bash}
@@ -54,7 +54,7 @@ and
 ```{bash}
 quarto install papermill
 ```
-</div>
+
 
 Then run the python code again 
 ```
@@ -66,6 +66,7 @@ or, after activating the environment manually (shown here for MacOS)
 source .venv/bin/activate
 python main.py
 ```
+</span>
 
 ---
 
