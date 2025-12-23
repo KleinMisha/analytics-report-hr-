@@ -11,8 +11,10 @@ Mostly, I wanted to learn how to generate PDF documents with values/graphs compu
 Making this report might not have been strictly necessary, but it taught me some valuable tooling. 
 
 ---
+![skyblue](https://img.shields.io/badge/Note-skyblue?style=flat&logo=appveyor&logoColor=white)
 
-<span style="color: skyblue">‼️ Given this is an extremely simple project, I did not include any tests and placed almost everything in the project's root directory. I simply do not expect this project to every grow. If it does, then I'd reorganize some files and such. </span>
+Given this is an extremely simple project, I did not include any tests and placed almost everything in the project's root directory. I simply do not expect this project to every grow. If it does, then I'd reorganize some files and such. 
+
 
 
 # 🛠️ Tools 
@@ -43,7 +45,9 @@ Making this report might not have been strictly necessary, but it taught me some
 
 ---
 
-<span style="color: hotpink"> ⚠️ Quarto will ask you to first install some `LaTex` engine and `papermill`. Simply follow the instructions shown on screen.
+![skyblue](https://img.shields.io/badge/Note-skyblue?style=flat&logo=appveyor&logoColor=white)
+
+⚠️ Quarto will ask you to first install some `LaTex` engine and `papermill`. Simply follow the instructions shown on screen.
 
 ```{bash}
 quarto install tinytex
@@ -64,7 +68,4 @@ or, after activating the environment manually (shown here for MacOS)
 source .venv/bin/activate
 python main.py
 ```
-</span>
-
----
 
