@@ -78,12 +78,27 @@ plot_pie_chart_days(hours_data)
 :::
 </div>
 
-```{python}
-# | output: asis
-from analytics import display_monthly_income
+#### How much to declare? 
+<div style="background-color: #F8F8F8;">
+:::{layout-ncol="2"}
 
-formatting = {"color": "red", "size": 22, "bold": True, "italic": True}
-html = display_monthly_income(hours_data, hourly_rate, formatting)
-print(html)
+```{python}
+from analytics import bar_chart_monthly_incomes
+
+bar_chart_monthly_incomes(hours_data, hourly_rate)
 ```
 
+
+
+
+:::
+</div>
+
+```{python}
+# | output: asis
+from analytics import create_html_monthly_incomes
+
+formatting = {"size": 22, "bold": True, "italic": True}
+html = create_html_monthly_incomes(hours_data, hourly_rate, formatting)
+print(html)
+```

@@ -12,6 +12,7 @@ from typing import Any
 import calendar
 import webcolors  # type: ignore
 from matplotlib.axes import Axes
+from tabulate import tabulate
 
 TASK_CATEGORIES = ("coaching", "lecture", "exam review")
 COLORS = ["#46dabf", "#009ac9", "#ff6384", "#58508d", "#ffa600"]
@@ -140,20 +141,56 @@ def plot_daily_hours(data: pd.DataFrame) -> None:
     plt.show()
 
 
-def display_monthly_income(
+def bar_chart_monthly_incomes(data: pd.DataFrame, hourly_rate: int) -> None:
+    """A horizontal bar chart showing the income, with the last month highlighted (and on top)"""
+
+    hours_per_month = data.groupby(["month_abbrev"])["hours"].sum()
+    hours_per_month.sort_index(
+        key=lambda x: pd.Index(list(calendar.month_abbr)).get_indexer(x), inplace=True
+    )
+    months = list(hours_per_month.index)
+    hours = list(hours_per_month.values)
+    for n, hrs in enumerate(hours):
+        income = calculate_income(hourly_rate, hrs)
+
+        color = "#009ac9"
+        # the last month: fill the bar. Others leave showing only the outline.
+        if n == len(hours) - 1:
+            facecolor = COLORS[1]
+        else:
+            facecolor = "none"
+        # simply add one bar at the time
+        plt.barh(n, income, facecolor=facecolor, edgecolor="black", linewidth=2)
+    plt.yticks(range(len(months)), months, fontsize=14)
+    plt.xticks(fontsize=14)
+    plt.xlabel("Earnings (€)", fontsize=14)
+    sns.despine()
+
+
+def create_html_monthly_incomes(
     data: pd.DataFrame, hourly_rate: int, text_format: dict[str, Any]
-) -> None:
+) -> str:
     """Show name of the month and the amount claimed at Hogeschool Rotterdam
     #! for this simple script: Just assume I do not forget to enter the dictionary properly. Would've used some dataclass or typed dictionary if this would be 'production' code.
     """
+    hours_per_month = data.groupby(["month_abbrev"])["hours"].sum()
+    hours_per_month.sort_index(
+        key=lambda x: pd.Index(list(calendar.month_abbr)).get_indexer(x), inplace=True
+    )
+    months: list[str] = list(hours_per_month.index)
+    hours: list[float] = list(hours_per_month.values)
+    table_data = []
+    for i, (month, hrs) in enumerate(zip(months, hours)):
+        if i == len(months) - 1:
+            text_format.update({"color": COLORS[1]})
+        else:
+            text_format.update({"color": "black"})
 
-    # total hours worked in a month
-    hours_per_month = data.groupby(["month_name"])["hours"].sum()
-    for month, hours in zip(hours_per_month.index, hours_per_month.values):
-        income = calculate_income(hourly_rate, hours)
-        html = create_html_text(f"{month} \t €{income} \n", **text_format)
-        break
-    return html
+        income = calculate_income(hourly_rate, hrs)
+        row_entry = create_html_text(f"{month} \t €{income} \n", **text_format)
+        table_data.append([row_entry])
+    html_table = tabulate(table_data, tablefmt="plain")
+    return f"<pre>{html_table}</pre>"
 
 
 # Helper functions
