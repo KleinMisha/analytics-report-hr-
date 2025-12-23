@@ -88,17 +88,17 @@ from analytics import bar_chart_monthly_incomes
 bar_chart_monthly_incomes(hours_data, hourly_rate)
 ```
 
-
-
-
-:::
-</div>
-
 ```{python}
-# | output: asis
+# |output: asis
 from analytics import create_html_monthly_incomes
 
 formatting = {"size": 22, "bold": True, "italic": True}
 html = create_html_monthly_incomes(hours_data, hourly_rate, formatting)
 print(html)
 ```
+
+
+
+:::
+</div>
+

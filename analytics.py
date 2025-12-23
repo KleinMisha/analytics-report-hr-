@@ -12,7 +12,7 @@ from typing import Any
 import calendar
 import webcolors  # type: ignore
 from matplotlib.axes import Axes
-from tabulate import tabulate
+
 
 TASK_CATEGORIES = ("coaching", "lecture", "exam review")
 COLORS = ["#46dabf", "#009ac9", "#ff6384", "#58508d", "#ffa600"]
@@ -177,7 +177,7 @@ def create_html_monthly_incomes(
     )
     months: list[str] = list(hours_per_month.index)
     hours: list[float] = list(hours_per_month.values)
-    table_data = []
+    rows = []
     for i, (month, hrs) in enumerate(zip(months, hours)):
         if i == len(months) - 1:
             text_format.update({"color": COLORS[1]})
@@ -185,10 +185,9 @@ def create_html_monthly_incomes(
             text_format.update({"color": "black"})
 
         income = calculate_income(hourly_rate, hrs)
-        row_entry = create_html_text(f"{month} \t €{income} \n", **text_format)
-        table_data.append([row_entry])
-    html_table = tabulate(table_data, tablefmt="plain")
-    return f"<pre>{html_table}</pre>"
+        rows.append(create_html_text(f"{month} \t €{income}", **text_format))
+    html_table = "<br>".join(reversed(rows))
+    return f"<div> {html_table}</div>"
 
 
 # Helper functions
@@ -265,7 +264,7 @@ def create_html_text(
         ";".join([adjust_color, adjust_size, adjust_weight, adjust_style])
         + "white-space: pre;"  # Apparently the thing that tells it to interpret the \t and \n as I'd like it.
     )
-    return f'<span style="{formatting}">{text}</span>'
+    return f'<div style="{formatting}">{text}</div>'
 
 
 def is_valid_html_color(color: str) -> bool:
