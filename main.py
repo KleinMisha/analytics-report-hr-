@@ -34,9 +34,10 @@ def main():
         "-P",
         f"data_path:{DATA_PATH}",
     ]
+    dont_clear_dir = ["--no-clean"]
     quarto_render = ["quarto", "render", INPUT_FILE]
 
-    command = quarto_render + parameters + output
+    command = quarto_render + parameters + output + dont_clear_dir
     print(f"Running {' '.join(command)} ")
     try:
         subprocess.run(
