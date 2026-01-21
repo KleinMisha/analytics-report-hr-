@@ -14,7 +14,7 @@ import webcolors  # type: ignore
 from matplotlib.axes import Axes
 
 
-TASK_CATEGORIES = ("coaching", "lecture", "exam review")
+TASK_CATEGORIES = ("coaching", "project lesson", "lecture (incl. prep)", "exam review")
 COLORS = ["#46dabf", "#009ac9", "#ff6384", "#58508d", "#ffa600"]
 sns.set_palette(COLORS)
 
@@ -58,7 +58,7 @@ def plot_pie_chart_activities(data: pd.DataFrame) -> None:
     tasks = list(hours_per_task.index)
 
     # build pie chart
-    _, ax = plt.subplots()
+    _, ax = plt.subplots(figsize=(8, 5))
     pie_chart_with_formatting(
         ax, percentages, tasks, threshold=10.0, text_pos=2.0, line_start_pos=1.0
     )
@@ -117,7 +117,6 @@ def plot_monthly_hours_breakdown(data: pd.DataFrame) -> None:
         )
         previous_category = category
 
-    plt.legend(fontsize=14)
     plt.xlabel("Month", fontsize=14)
     plt.ylabel("# hours", fontsize=14)
     plt.yticks([i * 5 for i in range(9)], fontsize=14)
