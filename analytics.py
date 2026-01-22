@@ -32,8 +32,15 @@ def prepare_data(path: Path) -> pd.DataFrame:
     # add the name of the day and month
     month_names, month_abbrevs = get_month_names(dates)
     day_names, day_abbrevs = get_day_names(dates)
-    df["month_name"] = month_names
-    df["month_abbrev"] = month_abbrevs
+
+    month_order = ["September", "October", "November", "December", "January"]
+
+    df["month_name"] = pd.Categorical(month_names, ordered=True, categories=month_order)
+    df["month_abbrev"] = pd.Categorical(
+        month_abbrevs,
+        categories=[name[:3] for name in month_order],
+        ordered=True,
+    )
     df["day_name"] = day_names
     df["day_abbrev"] = day_abbrevs
 
@@ -46,7 +53,7 @@ def plot_pie_chart_activities(data: pd.DataFrame) -> None:
     """A pie chart showing the percentage of time spend on different activities"""
 
     # calculate totals per category
-    hours_per_task = data.groupby("task")["hours"].sum()
+    hours_per_task = data.groupby("task", observed=True)["hours"].sum()
     hours_per_task.sort_index(
         key=lambda x: pd.Index(TASK_CATEGORIES).get_indexer(x),
         inplace=True,
@@ -69,7 +76,7 @@ def plot_pie_chart_activities(data: pd.DataFrame) -> None:
 def plot_pie_chart_days(data: pd.DataFrame) -> None:
     """A pie chart showing the percentage of time spend per weekday"""
     # calculate totals per weekday
-    hours_per_day = data.groupby("day_abbrev")["hours"].sum()
+    hours_per_day = data.groupby("day_abbrev", observed=True)["hours"].sum()
     hours_per_day.sort_index(
         key=lambda x: pd.Index(list(calendar.day_abbr)).get_indexer(x), inplace=True
     )
@@ -92,7 +99,7 @@ def plot_monthly_hours_breakdown(data: pd.DataFrame) -> None:
     """A stacked bar chart showing per month the number of hours spent and the fraction of them spent on a certain activity"""
 
     # Calculate total hours for every task and month
-    by_month_and_task = data.groupby(["month_abbrev", "task"])["hours"]
+    by_month_and_task = data.groupby(["month_abbrev", "task"], observed=True)["hours"]
     totals = by_month_and_task.sum()
 
     # create a pivot-table
@@ -100,12 +107,6 @@ def plot_monthly_hours_breakdown(data: pd.DataFrame) -> None:
 
     # some cleaning: If task not occuring in a month, means zero hours spent on it
     df_totals.fillna(0.0, inplace=True)
-
-    # place months in chronological order
-    months_in_order = list(calendar.month_abbr)[1:]
-    df_totals = df_totals.sort_index(
-        key=lambda x: pd.Index(months_in_order).get_indexer(x)
-    )
 
     # make the plot
     _, ax = plt.subplots()
@@ -127,7 +128,7 @@ def plot_monthly_hours_breakdown(data: pd.DataFrame) -> None:
 def plot_daily_hours(data: pd.DataFrame) -> None:
     """A simple chart showing number of hours spent VS date"""
     # sum all tasks
-    hours_per_day = data.groupby("date")["hours"].sum()
+    hours_per_day = data.groupby("date", observed=True)["hours"].sum()
     date = pd.to_datetime(hours_per_day.index)
 
     # create the plot
@@ -143,12 +144,10 @@ def plot_daily_hours(data: pd.DataFrame) -> None:
 def bar_chart_monthly_incomes(data: pd.DataFrame, hourly_rate: int) -> None:
     """A horizontal bar chart showing the income, with the last month highlighted (and on top)"""
 
-    hours_per_month = data.groupby(["month_abbrev"])["hours"].sum()
-    hours_per_month.sort_index(
-        key=lambda x: pd.Index(list(calendar.month_abbr)).get_indexer(x), inplace=True
-    )
+    hours_per_month = data.groupby(["month_abbrev"], observed=True)["hours"].sum()
+    hours_per_month.sort_index(inplace=True)
     months = list(hours_per_month.index)
-    hours = list(hours_per_month.values)
+    hours: list[float] = list(hours_per_month.to_numpy())
     for n, hrs in enumerate(hours):
         income = calculate_income(hourly_rate, hrs)
         # the last month: fill the bar. Others leave showing only the outline.
@@ -170,10 +169,8 @@ def create_html_monthly_incomes(
     """Show name of the month and the amount claimed at Hogeschool Rotterdam
     #! for this simple script: Just assume I do not forget to enter the dictionary properly. Would've used some dataclass or typed dictionary if this would be 'production' code.
     """
-    hours_per_month = data.groupby(["month_abbrev"])["hours"].sum()
-    hours_per_month.sort_index(
-        key=lambda x: pd.Index(list(calendar.month_abbr)).get_indexer(x), inplace=True
-    )
+    hours_per_month = data.groupby(["month_abbrev"], observed=True)["hours"].sum()
+    hours_per_month.sort_index(inplace=True)
     months: list[str] = list(hours_per_month.index)
     hours: list[float] = list(hours_per_month.values)
     rows = []
